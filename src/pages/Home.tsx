@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Post } from "../types/Post";
-import { Link } from "react-router-dom";
+import { ListItem } from "../components/ListItem";
 
 
 export const Home = () => {
@@ -30,11 +30,7 @@ export const Home = () => {
         <div>
           {posts.map((post, index) => (
               <div key={index}>
-                <Link to={`/album/${post.id}`}>
-                  <div className="postItem">
-                    {post.title}
-                  </div>
-                </Link> 
+                <ListItem id={post.id} title={post.title} />
               </div>
             ))}
         </div>

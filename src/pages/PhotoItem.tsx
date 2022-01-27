@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { Album } from '../types/Album';
 import { Button } from '../components/Button';
+import { api } from '../api';
 
 export const PhotoItem = () => {
   const [photos, setPhotos] = useState<Album>();
@@ -11,17 +12,17 @@ export const PhotoItem = () => {
   const params = useParams();
 
   useEffect(() => {
-    loadPhoto();
+    if(params.id)
+      loadPhoto(params.id);
   }, []);
 
   const http = axios.create({
     baseURL: 'https://jsonplaceholder.typicode.com/photos/'
   });
 
-  const loadPhoto = async () => {
+  const loadPhoto = async (id: string) => {
     setLoading(true);
-    let response = await http.get(`${params.id}`);
-    let json = await response.data;
+    let json = await api.getPhoto(id);
     setLoading(false);
     setPhotos(json);
   }
