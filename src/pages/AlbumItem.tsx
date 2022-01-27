@@ -1,20 +1,24 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Post } from '../types/Post';
 import { Album } from '../types/Album';
 import { Button } from '../components/Button';
 import axios from 'axios';
+import { api } from '../api';
+import { AlbumPhoto } from '../components/Album';
 
 export const AlbumItem = () => {
   const params = useParams();
 
-  const [atributies, setAtributies] = useState<Post>();
+  const [atributies, setAtributies] = useState<Post>({id:0, title:'', userId:0});
   const [albuns, setAlbuns] = useState<Album[]>([])
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadAlbumTitle();
-    loadAlbuns();
+    if(params.id) {
+      loadAlbumTitle(params.id);
+      loadAlbuns(params.id);
+    }
   }, []);
 
   const http = axios.create({
@@ -22,16 +26,14 @@ export const AlbumItem = () => {
   });
 
 
-  const loadAlbumTitle = async () => {
-    let response = await http.get(`${params.slug}`);
-    let json = await response.data;
+  const loadAlbumTitle = async (id: string) => {
+    let json = await api.getAlbum(id);
     setAtributies(json);
   }
 
-  const loadAlbuns = async () => {
+  const loadAlbuns = async (id: string) => {
     setLoading(true);
-    let response = await http.get(`${params.slug}/photos`);
-    let json = await response.data;
+    let json = await api.getPhotosFromAlbum(id);
     setLoading(false);
     setAlbuns(json);
   }
@@ -51,11 +53,7 @@ export const AlbumItem = () => {
 
           <div className="estrut" >
             {albuns.map((album, index) => (
-              <Link to={`/photo/${album.id}`} key={index}>
-                <div className="tumb"  >
-                  <img src={album.thumbnailUrl} />
-                </div>
-              </Link>
+              <AlbumPhoto key={index} data={album} />
             ))}
           </div>
         </div>
